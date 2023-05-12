@@ -1,10 +1,16 @@
 const Item = require('../models/Item');
 
 
-const create = (body) => Item.findOneAndUpdate(body,{$set: {name: body.name}},{upsert: true, returnDocument: true});
+const updateOrCreate = (body) => Item.findOneAndUpdate(body,{$set: {name: body.name}},{upsert: true, returnDocument: true});
 
-const selectAll = () => Item.find().sort({'id': 'asc'}).limit(100)
+const updateOrCreateMedia = (body) => Item.findOneAndUpdate({id: body.id},{$set: {media: body.media}},{upsert: true, returnDocument: true});
+
+const selectAllLimit = () => Item.find().sort({'id': 'asc'}).limit(100)
+
+const selectAll = () => Item.find()
+
+const selectPart = (start, end) => Item.find({media: ''}).skip(start).limit(end)
 
 module.exports = {
-    create, selectAll
+    updateOrCreate, updateOrCreateMedia, selectAll, selectAllLimit, selectPart
 }

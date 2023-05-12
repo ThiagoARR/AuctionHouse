@@ -9,21 +9,35 @@ import { Column } from 'primereact/column';
 import "primereact/resources/themes/lara-light-indigo/theme.css";     
 //core
 import "primereact/resources/primereact.min.css";                                       
-        
 
 function App() {
   const [itemList, setItemList] = useState([])
-  const [loader, setLoader] = useState(true)
+  const [loader, setLoader] = useState(false)
 
   useEffect(() => {
     axios.get('http://localhost:3000/item/getAllItem').then((response) => {
       setItemList(response.data.item);
-      setLoader(false)
     })
   },[])
+
+  const syncItem = () => {
+    setItemList([])
+    axios.get('http://localhost:3000/item/getAllItem').then((response) => {
+      setItemList(response.data.item);
+    })
+  }
+
+  const updateItemDB = () =>{  
+    setLoader(true);
+    axios.get('http://localhost:3000/item/updateOrCreateItem').then((response) => {
+      setItemList(response.data.item);
+      setLoader(false)
+      syncItem;
+    })
+  }
   
   return (
-    <>{itemList.length > 0 ? (itemList.map((col) => <div>{col.name}</div>)):(<div></div>)}
+    <>
     </>
   )
 }

@@ -3,6 +3,7 @@ const router = require('express').Router();
 
 router.get('/getItem', itemController.getItem);
 router.get('/getAllItem', itemController.getAllItem);
-router.get('/createItem', itemController.createItem)
+router.get('/updateOrCreateItem', itemController.updateOrCreateItem)
+router.get('/updateOrCreateItemMedia', itemController.updateOrCreateItemMedia)
 
 module.exports = router;
