@@ -12,6 +12,17 @@ const ItemSchema = new mongoose.Schema({
     },
     media: {
         type: String
+    },
+    sell_price: {
+        gold: {
+            type: Number
+        },
+        silver: {
+            type: Number
+        },
+        cooper: {
+            type: Number
+        }
     }
 });
 

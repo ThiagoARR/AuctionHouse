@@ -1,13 +1,25 @@
 const Item = require('../models/Item');
 
 
-const updateOrCreate = (body) => Item.findOneAndUpdate(body,{$set: {name: body.name}},{upsert: true, returnDocument: true});
+const updateOrCreate = (body) => Item.findOneAndUpdate(
+    {
+        id: body.id
+    },
+    {
+        $set: {
+            sell_price: {
+                gold: body.gold,
+                silver: body.silver,
+                cooper: body.cooper
+            }
+        }
+    },{upsert: true, returnDocument: true});
 
 const updateOrCreateMedia = (body) => Item.findOneAndUpdate({id: body.id},{$set: {media: body.media}},{upsert: true, returnDocument: true});
 
-const selectAllLimit = () => Item.find().sort({'id': 'asc'}).limit(100)
+const selectAllLimit = () => Item.find().sort({'sell_price': 'desc'}).limit(100)
 
-const selectAll = () => Item.find()
+const selectAll = () => Item.find({media: ''})
 
 const selectPart = (start, end) => Item.find({media: ''}).skip(start).limit(end)
 

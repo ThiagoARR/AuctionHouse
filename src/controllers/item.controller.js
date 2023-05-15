@@ -1,9 +1,10 @@
 const axios = require('axios');
 const itemService = require('../services/item.service');
+const async = require('async');
 
 const getItem = async (req, res) => {
-    const item = "Frostmourne";
-
+    const item = await itemService.selectAll();
+    console.log(item.length)
     res.send({item: item});
 }
 
@@ -24,7 +25,9 @@ const updateOrCreateItem = async (req, res) => {
                 await Promise.all(response.data.results.map(async (e) => {
                 let body = {
                     "id": e.data.id,
-                    "name": e.data.name.pt_BR
+                    "gold": e.data.sell_price.display_string.gold,
+                    "silver": e.data.sell_price.display_string.silver,
+                    "cooper": e.data.sell_price.display_string.cooper,
                 };
                 
                 await itemService.updateOrCreate(body);
@@ -33,7 +36,7 @@ const updateOrCreateItem = async (req, res) => {
 
                 console.log(`Pagina ${startingItem} cadastrada com sucesso`);
             }catch(error){
-                console.log(`Erro ao cadastrar itens na pagina ${startingItem}`);
+                console.log(`Erro ao cadastrar itens na pagina ${startingItem}- ${error}`);
             }
         }while(response.data.results.length > 0)
         res.send("Cadastrado com sucesso");
@@ -46,12 +49,13 @@ const updateOrCreateItem = async (req, res) => {
 const updateOrCreateItemMedia = async (req, res) => {
     try {
         let start = 0;
-        let end = 2000;
+        let end = 10000;
         let item;
-        do{
+        
             item = await itemService.selectPart(start, end);
-            item.forEach( async (element) => {
+            async.eachLimit(item, 20, async (element) => {
                 try{
+                    await sleep(2000);
                     response = await axios.get(`https://us.api.blizzard.com/data/wow/media/item/${element.id}?namespace=static-us&locale=en_US&access_token=EUCmIEyxYWX8MoF4OFyiJHZ6aLcBS0kQd0`);
 
                     let body = {
@@ -63,12 +67,9 @@ const updateOrCreateItemMedia = async (req, res) => {
 
                     console.log(`Imagem do item ${element.name} cadastrada com sucesso`);
                 }catch(error){
-                    console.log(`Erro ao cadastrar imagem do item ${element.name} - ${error.code} - ${element.id}`);
+                    console.log(`Erro ao cadastrar imagem do item ${element.name} - ${error.code} - ${error} - ${element.id}`);
                 }
             });
-            start = end;
-            end = end + 2000;
-        }while(item.length > 0);
         res.send("Cadastrado com sucesso");
 
       } catch (error) {
@@ -76,5 +77,9 @@ const updateOrCreateItemMedia = async (req, res) => {
         res.status(500).send("Erro ao cadastrar itens");
       }
 }
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
 
 module.exports = {getItem, getAllItem, updateOrCreateItem, updateOrCreateItemMedia}

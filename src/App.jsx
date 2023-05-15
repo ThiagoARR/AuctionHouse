@@ -17,6 +17,7 @@ function App() {
   useEffect(() => {
     axios.get('http://localhost:3000/item/getAllItem').then((response) => {
       setItemList(response.data.item);
+      console.log(itemList)
     })
   },[])
 
@@ -38,6 +39,13 @@ function App() {
   
   return (
     <>
+      {itemList.map(e =>{
+        return <div style={{display: 'flex', alignItems: 'center'}}>
+          <img src={e.media} style={{width: '40px'}}/>
+          <div style={{marginLeft: '15px'}}>{e.name}</div>
+          <div style={{marginLeft: '15px'}}>{e.sell_price}</div>
+        </div>
+      })}
     </>
   )
 }
